@@ -4,6 +4,10 @@ from aws_cdk import (
     aws_lambda as lambda_,
     aws_lambda_python_alpha as lambda_python,
 )
+from aws_cdk.aws_apigateway import (
+    LambdaIntegration,
+    RestApi,
+)
 from constructs import Construct
 
 class SimpleWebSiteStack(Stack):
@@ -20,4 +24,13 @@ class SimpleWebSiteStack(Stack):
             handler="handler",
             runtime=lambda_.Runtime.PYTHON_3_8,
             timeout=Duration.seconds(30),
+        )
+
+        api = RestApi(self, "simple_web_site_api_gateway", rest_api_name="simple_web_site_api_gateway")
+
+        root_resource = api.root
+
+        any_method_mapping = root_resource.add_method(
+            "ANY",
+            LambdaIntegration(web_site_lambda)
         )
